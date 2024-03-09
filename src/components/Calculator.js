@@ -1,43 +1,94 @@
-import React, { useState } from 'react'
-import './calculatorstyles.css'
+import React, { useReducer } from "react";
+import "./calculatorstyles.css";
+
+const ACTIONS = {
+  ADD_DIGIT: "add-digit",
+  CHOOSE_OPERATION: "choose-operation",
+  CLEAR: "clear",
+  DELETE_DIGIT: "delete-digit",
+  EVALUATE: "evaluate",
+};
+
+const reducer = (state, { type, payload }) => {
+  switch (type) {
+    case ACTIONS.ADD_DIGIT:
+      return {
+        ...state,
+        currentOperand: `${state.currentOperand}${payload.digit}`,
+      };
+    case ACTIONS.CHOOSE_OPERATION:
+      return {
+        ...state,
+        previousOperand: state.currentOperand,
+        currentOperand: "",
+        operation: payload.operation,
+      };
+    case ACTIONS.CLEAR:
+      return {
+        currentOperand: "",
+        previousOperand: "",
+        operation: "",
+      };
+    default:
+      return state;
+  }
+};
 
 const Calculator = () => {
-    // array for the numbers on the calculator
-    const calNums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-    // variable for multiplication
-    const calMultiply = `${calNums} * ${calNums}`
-    // variable for division
-    const calDivide = `${calNums} / ${calNums}`
-    // variable for addition
-    const calAdd = `${calNums} + ${calNums}`
-    // variable for subtraction
-    const calSubtract = `${calNums} - ${calNums}`
-    // state variable for total
-    const [total, setTotal] = useState(0)
-    
-    const multiply = () => {
-        return (calMultiply)
+  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
+    reducer,
+    {
+      currentOperand: "",
+      previousOperand: "",
+      operation: "",
     }
-    const divide = () => {
-        return (calDivide)
-    }
-    const add = () => {
-        return (calAdd)
-    }
-    const subtract = () => {
-        return (calSubtract)
-    }
+  );
+
+  const handleDigitClick = (digit) => {
+    dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } });
+  };
+
+  const handleOperationClick = (operation) => {
+    dispatch({ type: ACTIONS.CHOOSE_OPERATION, payload: { operation } });
+  };
+
+  const handleClearClick = () => {
+    dispatch({ type: ACTIONS.CLEAR });
+  };
 
   return (
     <>
-        <div className='cal-body'>
-            <div className='display'></div>
-            <div className='num-pad'></div>
-            <div className='operators'></div>
-            <div className='btns'></div>
+      <h1>Calculator</h1>
+      <div className="calculator-grid">
+        <div className="output">
+          <div className="previous-operand">
+            {previousOperand} {operation}
+          </div>
+          <div className="current-operand">{currentOperand}</div>
         </div>
+        <button className="span-two" onClick={handleClearClick}>
+          AC
+        </button>
+        <button>DEL</button>
+        <button onClick={() => handleOperationClick("÷")}>÷</button>
+        <button onClick={() => handleDigitClick("1")}>1</button>
+        <button onClick={() => handleDigitClick("2")}>2</button>
+        <button onClick={() => handleDigitClick("3")}>3</button>
+        <button onClick={() => handleOperationClick("x")}>x</button>
+        <button onClick={() => handleDigitClick("4")}>4</button>
+        <button onClick={() => handleDigitClick("5")}>5</button>
+        <button onClick={() => handleDigitClick("6")}>6</button>
+        <button onClick={() => handleOperationClick("+")}>+</button>
+        <button onClick={() => handleDigitClick("7")}>7</button>
+        <button onClick={() => handleDigitClick("8")}>8</button>
+        <button onClick={() => handleDigitClick("9")}>9</button>
+        <button onClick={() => handleOperationClick("-")}>-</button>
+        <button onClick={() => handleDigitClick(".")}>.</button>
+        <button onClick={() => handleDigitClick("0")}>0</button>
+        <button className="span-two">=</button>
+      </div>
     </>
-  )
-}
+  );
+};
 
-export default Calculator
+export default Calculator;
